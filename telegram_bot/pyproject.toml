@@ -1,0 +1,15 @@
+[project]
+name = "telegram_bot"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Daniil Ermolaev", email = "twofaced-janus@yandex.ru"},
+]
+dependencies = ["aiogram>=3.20.0.post0", "logging>=0.4.9.6", "sqlalchemy>=2.0.40", "psycopg2-binary>=2.9.10"]
+requires-python = "==3.13.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
