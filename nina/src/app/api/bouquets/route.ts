@@ -1,10 +1,11 @@
 // src/app/api/bouquets/route.ts
+// @ts-expect-error: No type definitions for pg ESM import
 import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: false
 });
 
 export async function GET() {

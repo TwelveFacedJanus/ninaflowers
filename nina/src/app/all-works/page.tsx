@@ -33,7 +33,7 @@ export default function AllWorksPage() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" style={{ backgroundColor: '#186697', minHeight: '100vh' }}>
       <Link href="/" className="mb-6 inline-block text-blue-500 hover:underline">
         ← Назад
       </Link>

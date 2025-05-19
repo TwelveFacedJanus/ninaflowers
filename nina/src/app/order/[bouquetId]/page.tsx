@@ -46,16 +46,16 @@ export default function OrderPage() {
 
   const generateWhatsAppLink = () => {
     const message = `Здравствуйте! Хочу заказать букет "${bouquet?.name}" (ID: ${bouquetId}). Мой телефон: ${phone}`;
-    return `https://wa.me/79001234567?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/79872521696?text=${encodeURIComponent(message)}`;
   };
 
   const generateTelegramLink = () => {
     const message = `Здравствуйте! Хочу заказать букет "${bouquet?.name}" (ID: ${bouquetId}). Мой телефон: ${phone}`;
-    return `https://t.me/florist_shop?start=${encodeURIComponent(message)}`;
+    return `https://t.me/79872521696?start=${encodeURIComponent(message)}`;
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8" style={{ backgroundColor: '#186697', minHeight: '100vh' }}>
       <Link href="/" className="inline-block mb-6 text-blue-500 hover:underline">
         ← Вернуться назад
       </Link>
@@ -79,13 +79,13 @@ export default function OrderPage() {
               </div>
             )}
             <div className="w-full md:w-1/2">
-              <h2 className="text-2xl font-bold mb-2">{bouquet.name}</h2>
-              <p className="text-gray-600 mb-4">{bouquet.description}</p>
-              <p className="text-xl font-bold text-green-600 mb-6">{bouquet.price} ₽</p>
+              <h2 className="text-2xl font-bold mb-2 text-black">{bouquet.name}</h2>
+              <p className="text-gray-600 mb-4 text-black">{bouquet.description}</p>
+              <p className="text-xl font-bold text-green-600 mb-6 text-black">{bouquet.price} ₽</p>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block mb-1">Ваше имя</label>
+                  <label className="block mb-1 text-black">Ваше имя</label>
                   <input 
                     type="text" 
                     className="w-full p-2 border rounded"
@@ -93,7 +93,7 @@ export default function OrderPage() {
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Телефон *</label>
+                  <label className="block mb-1 text-black">Телефон *</label>
                   <input 
                     type="tel" 
                     className="w-full p-2 border rounded"
@@ -103,7 +103,7 @@ export default function OrderPage() {
                   />
                 </div>
                 <div>
-                  <label className="block mb-1">Адрес доставки</label>
+                  <label className="block mb-1 text-black">Адрес доставки</label>
                   <input 
                     type="text" 
                     className="w-full p-2 border rounded"

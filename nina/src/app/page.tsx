@@ -1,8 +1,9 @@
 "use client"
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import styles from './MainPage.module.css';
 
 // Анимационные константы
 const containerVariants = {
@@ -87,7 +88,7 @@ const AnimatedBackground = () => {
       transition: {
         duration: 8 + i * 2,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: 'reverse' as const,
         ease: "easeInOut"
       }
     })
@@ -114,7 +115,7 @@ const AnimatedBackground = () => {
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100%',
+        width: '100vw',
         height: '100%',
         zIndex: 0,
         pointerEvents: 'none',
@@ -157,8 +158,22 @@ interface Bouquet {
   photo_base64?: string;
 }
 
+// Хук для ширины экрана
+function useWindowWidth() {
+  const [width, setWidth] = useState(1200);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWidth(window.innerWidth);
+      const handleResize = () => setWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+  return width;
+}
+
 export default function MainPage() {
-  const [hoverStates, setHoverStates] = useState({});
+  const [hoverStates, setHoverStates] = useState<Record<string, boolean>>({});
   const [bouquets, setBouquets] = useState<Bouquet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -234,6 +249,9 @@ export default function MainPage() {
     transition: 'all 0.3s ease'
   });
 
+  const width = useWindowWidth();
+  const isMobile = width < 600;
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -243,11 +261,14 @@ export default function MainPage() {
         display: 'flex', 
         flexDirection: 'column', 
         minHeight: '100vh',
-        padding: '20px 120px',
+        padding: isMobile ? '8px 2vw' : '20px 120px',
         fontWeight: 500,
         backgroundColor: colorPalette.background,
         color: colorPalette.text,
-        position: 'relative'
+        position: 'relative',
+        boxSizing: 'border-box',
+        width: '100vw',
+        overflowX: 'hidden',
       }}
     >
       <AnimatedBackground />
@@ -259,23 +280,25 @@ export default function MainPage() {
         transition={{ duration: 0.5, delay: 0.2 }}
         style={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
           width: '100%',
-          marginBottom: '80px'
+          marginBottom: isMobile ? '32px' : '80px',
+          gap: isMobile ? '10px' : '0',
         }}
       >
-        <motion.div whileHover={{ scale: 1.05 }}>
+        <motion.div whileHover={{ scale: 1.05 }} style={{ marginBottom: isMobile ? 8 : 0 }}>
           <Image
             src='/logo.svg'
-            width={100}
-            height={100}
+            width={isMobile ? 120 : 200}
+            height={isMobile ? 120 : 200}
             alt="logo"
           />
         </motion.div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '21px'}}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', width: '100%', justifyContent: isMobile ? 'center' : 'flex-start' }}>
           <motion.div 
-            style={{ display: 'flex', alignItems: 'center', gap: '21px', marginRight: 61 }}
+            style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', marginRight: isMobile ? 0 : 61, width: '100%', justifyContent: isMobile ? 'center' : 'flex-start' }}
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -292,7 +315,8 @@ export default function MainPage() {
                   color: colorPalette.text,
                   cursor: 'pointer',
                   fontSize: '1rem',
-                  fontWeight: '500'
+                  fontWeight: '500',
+                  textAlign: isMobile ? 'center' : 'left',
                 }}
               >
                 {item}
@@ -303,8 +327,9 @@ export default function MainPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-start', marginTop: isMobile ? 8 : 0 }}
           >
-            <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start'}}>
               <Image
                 src='/phone.svg'
                 width={15}
@@ -312,9 +337,11 @@ export default function MainPage() {
                 alt='phone'
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
-              <p style={{ margin: 0, color: colorPalette.primaryLight }}>8 800 555 35 35</p>
+              <p style={{ margin: 0, color: colorPalette.primaryLight, fontSize: isMobile ? '0.95rem' : '1rem', fontWeight: 600 }}>
+                +7 987 252-16-96
+              </p>
             </div>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: colorPalette.lightText }}>
+            <p style={{ margin: 0, fontSize: isMobile ? '0.7rem' : '0.8rem', color: colorPalette.lightText, textAlign: isMobile ? 'center' : 'left' }}>
               Бесплатный звонок по всей России
             </p>
           </motion.div>
@@ -344,7 +371,7 @@ export default function MainPage() {
           <motion.h1 
             style={{ 
               margin: '0 0 20px 0', 
-              fontSize: '2.5rem', 
+              fontSize: isMobile ? '1.5rem' : '2.5rem', 
               fontWeight: 'bold',
               color: colorPalette.text
             }}
@@ -356,14 +383,19 @@ export default function MainPage() {
               margin: '0 0 40px 0', 
               maxWidth: '600px',
               lineHeight: '1.6',
-              fontSize: '1.1rem',
+              fontSize: isMobile ? '0.95rem' : '1.1rem',
               color: colorPalette.text
             }}
           >
             Каждый букет — это отражение нашей любви к цветам. Мы используем только самые свежие и качественные цветы, чтобы создавать красивые композиции, которые порадуют ваших близких.
           </motion.p>
           <motion.button 
-            style={getButtonStyle(hoverStates['mainButton'] as boolean)}
+            style={{
+              ...getButtonStyle(hoverStates['mainButton'] as boolean),
+              width: isMobile ? '100%' : undefined,
+              fontSize: isMobile ? '1rem' : '1.1rem',
+              padding: isMobile ? '12px 0' : '15px 50px',
+            }}
             onMouseEnter={() => toggleHover('mainButton', true)}
             onMouseLeave={() => toggleHover('mainButton', false)}
             whileHover={buttonHover}
@@ -413,72 +445,105 @@ export default function MainPage() {
             <div style={{ color: 'red' }}>Ошибка: {error}</div>
           ) : (
             <motion.div 
-  style={{
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '30px',
-    marginBottom: '50px'
-  }}
->
-  {bouquets.slice(0, 6).map((bouquet) => (
-    <motion.div 
-      key={bouquet.id}
-      whileHover={cardHover}
-      style={{
-        backgroundColor: colorPalette.cardBg,
-        borderRadius: '12px',
-        padding: '20px',
-
-      }}
-    >
-        {bouquet.photo_base64 ? (
-          <div style={{ 
-            width: '100%', 
-            height: '250px', 
-            position: 'relative',
-            marginBottom: '15px'
-          }}>
-            <img
-              src={
-                bouquet.photo_base64.startsWith('data:image') 
-                  ? bouquet.photo_base64 
-                  : `data:image/jpeg;base64,${bouquet.photo_base64}`
-              }
-              alt={bouquet.name}
+              className={styles.worksGrid}
               style={{
+                background: 'none',
+                backdropFilter: 'none',
+                zIndex: 1,
+                position: 'relative',
+                opacity: 1,
                 width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                borderRadius: '8px'
+                margin: 0,
               }}
-            />
-          </div>
-        ) : (
-          <div style={{ 
-            width: '100%', 
-            height: '250px',
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '15px'
-          }}>
-            Нет изображения
-          </div>
-        )}
-        
-        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>
-          {bouquet.name}
-        </h3>
-        <p style={{ margin: '0 0 10px 0', color: colorPalette.lightText }}>
-          {bouquet.description}
-        </p>
-        <p style={{ fontWeight: 'bold', color: colorPalette.primary }}>
-          {bouquet.price} ₽
-        </p>
-      </motion.div>
-    ))}
-  </motion.div>
+            >
+              {bouquets.slice(0, 6).map((bouquet) => (
+                <motion.div 
+                  key={bouquet.id}
+                  whileHover={cardHover}
+                  style={{
+                    backgroundColor: '#fff',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    opacity: 1,
+                    filter: 'none',
+                    backdropFilter: 'none',
+                    zIndex: 1,
+                    position: 'relative',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                    border: '1px solid #eee',
+                    maxWidth: '260px',
+                    minWidth: 0,
+                    width: '100%',
+                    margin: '0 auto',
+                  }}
+                >
+                  {bouquet.photo_base64 ? (
+                    <div style={{ 
+                      width: '100%', 
+                      height: '250px', 
+                      position: 'relative',
+                      marginBottom: '15px'
+                    }}>
+                      <Image
+                        src={
+                          bouquet.photo_base64.startsWith('data:image') 
+                            ? bouquet.photo_base64 
+                            : `data:image/jpeg;base64,${bouquet.photo_base64}`
+                        }
+                        alt={bouquet.name}
+                        fill
+                        style={{
+                          objectFit: 'cover',
+                          borderRadius: '8px'
+                        }}
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ 
+                      width: '100%', 
+                      height: '250px',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: '15px'
+                    }}>
+                      Нет изображения
+                    </div>
+                  )}
+                  
+                  <h3 className="text-black" style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>
+                    {bouquet.name}
+                  </h3>
+                  <p style={{ margin: '0 0 10px 0', color: colorPalette.lightText }}>
+                    {bouquet.description}
+                  </p>
+                  <a
+                    href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${bouquet.name}" (ID: ${bouquet.id}).`)}"`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '10px',
+                      padding: '10px 24px',
+                      borderRadius: '8px',
+                      backgroundColor: colorPalette.primary,
+                      color: colorPalette.background,
+                      fontWeight: 'bold',
+                      fontSize: '1.1rem',
+                      textDecoration: 'none',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.backgroundColor = colorPalette.primaryLight)}
+                    onMouseOut={e => (e.currentTarget.style.backgroundColor = colorPalette.primary)}
+                  >
+                    {bouquet.price} ₽ — Заказать в WhatsApp
+                  </a>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
 
           <Link href="/all-works" passHref>
@@ -527,12 +592,8 @@ export default function MainPage() {
           </motion.h2>
           
           <motion.div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '40px',
-              textAlign: 'center'
-            }}
+            className={styles.featuresGrid}
+            style={{ textAlign: 'center' }}
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -664,7 +725,7 @@ export default function MainPage() {
           >
             {/* WhatsApp button */}
             <motion.a 
-              href="https://wa.me/78005553535" 
+              href="https://wa.me/+79872521696" 
               target="_blank" 
               rel="noopener noreferrer"
               style={{
@@ -696,7 +757,7 @@ export default function MainPage() {
 
             {/* Telegram button */}
             <motion.a 
-              href="https://t.me/florist_shop" 
+              href="https://t.me/+79872521696" 
               target="_blank" 
               rel="noopener noreferrer"
               style={{
@@ -763,12 +824,8 @@ export default function MainPage() {
           </motion.h2>
           
           <motion.div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '30px',
-              marginBottom: '50px'
-            }}
+            className={styles.reviewsGrid}
+            style={{ marginBottom: '50px' }}
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"

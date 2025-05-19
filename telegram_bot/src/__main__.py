@@ -43,7 +43,7 @@ class EditBouquetStages(StatesGroup):
 
 async def set_default_user():
     if await ManageUsers.find_user_by_id(user_id='6111027096') is None:
-        await ManageUsers.set_user(user=Users(telegram_id='6111027096', phone_number='None', role='tech', auth_token='hello'))
+        await ManageUsers.set_user(user=Users(telegram_id='6111027096', phone_number='None', role='tech', auth_token='HBVGVgvwdfyghbBAHSDBVh1512'))
     else:
         print("Default user already exists.")
 
@@ -380,8 +380,8 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
     await message.answer("Привет, меня зовут Фрирен! Я буду помогать тебе с твоей работой!")
     await asyncio.sleep(1)
     await message.answer("Для начала, тебе нужно ввести токен авторизации. Его ты можешь взять у tg://user?id=6111027096")
-    if ManageUsers.find_user_by_id(message.from_user.id) == None:
-        ManageUsers.set_user(user=Users(telegram_id=str(message.from_user.id), phone_number=None))
+    if await ManageUsers.find_user_by_id(message.from_user.id) is None:
+        await ManageUsers.set_user(user=Users(telegram_id=str(message.from_user.id), phone_number=None))
     await state.set_state(AuthStages.waiting_for_token)
 
 @dp.message(AuthStages.waiting_for_token)

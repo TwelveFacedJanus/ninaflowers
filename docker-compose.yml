@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  db:
+    build:
+      context: ./telegram_bot/Dockerfiles/Postgres
+      dockerfile: Dockerfile
+    container_name: ninaflowers_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: superpassword
+      POSTGRES_DB: ninaflowers_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "superuser", "-d", "ninaflowers_db"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  web:
+    build:
+      context: ./nina
+      dockerfile: Dockerfile
+    working_dir: /app
+    container_name: ninaflowers_web
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://superuser:superpassword@db:5432/ninaflowers_db
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+  bot:
+    image: python:3.13
+    working_dir: /app/src
+    container_name: ninaflowers_bot
+    command: sh -c "pip install poetry && poetry install && poetry run python __main__.py"
+    volumes:
+      - ./telegram_bot:/app
+    environment:
+      DATABASE_URL: postgresql://superuser:superpassword@db:5432/ninaflowers_db
+    depends_on:
+      db:
+        condition: service_healthy
+    # Uncomment if your bot exposes a port (e.g., FastAPI webhook)
+    # ports:
+    #   - "8000:8000"
+
+volumes:
+  pgdata: 

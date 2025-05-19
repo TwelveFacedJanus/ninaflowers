@@ -69,8 +69,8 @@
 
 /* Карточки */
 .workCard, .featureCard, .reviewCard {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  /* background: rgba(255, 255, 255, 0.1); */
+  /* backdrop-filter: blur(10px); */
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   transition: all 0.3s ease;
@@ -95,11 +95,31 @@
   gap: 40px;
 }
 
+@media (max-width: 900px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
 .reviewsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
   margin-bottom: 50px;
+}
+
+@media (max-width: 600px) {
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 /* Иконки и рейтинг */
@@ -145,4 +165,17 @@
 .whatsappButton:hover, .telegramButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 900px) {
+  .worksGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .worksGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
