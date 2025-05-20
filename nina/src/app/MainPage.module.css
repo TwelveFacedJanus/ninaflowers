@@ -179,3 +179,18 @@
     gap: 10px;
   }
 }
+
+.flowerBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/Flower.svg');
+  background-repeat: no-repeat;
+  background-size: 70vw auto;
+  background-position: right 0 bottom -200px;
+  opacity: 0.18;
+}

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import styles from './MainPage.module.css';
+import React from "react";
 
 // Анимационные константы
 const containerVariants = {
@@ -172,11 +173,63 @@ function useWindowWidth() {
   return width;
 }
 
+const categories = [
+  { label: "До 2000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
+  { label: "До 3000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
+  { label: "До 5000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
+  { label: "До 10000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
+  { label: "Маме", icon: "https://content3.flowwow-images.com/data/giftSelection/4/1723644472-66bcba38abcfb-web_image_second.jpg" },
+  { label: "На день рождения", icon: "https://content3.flowwow-images.com/data/giftSelection/6/1723648842-66bccb4a73a90-web_image_second.jpg" },
+  { label: "Любимой девушке", icon: "https://content3.flowwow-images.com/data/giftSelection/5/1723648605-66bcca5de6111-web_image_second.jpg" },
+  { label: "Бабушке", icon: "https://content3.flowwow-images.com/data/giftSelection/9/1723705422-66bda84e5cdea-web_image_second.jpg" },
+  { label: "Мужчине", icon: "https://content2.flowwow-images.com/data/giftSelection/14/1723794381-66bf03cdc394b-web_image_second.jpg" },
+  { label: "Друзьям", icon: "https://content2.flowwow-images.com/data/giftSelection/13/1723794170-66bf02fabe04d-web_image_second.jpg" },
+  { label: "Композиции", icon: "https://content3.flowwow-images.com/data/giftSelection/8/1723705146-66bda73a25e74-web_image_second.jpg" },
+];
+
+function getCategoryHashtag(label: string): string {
+  // Преобразуем label в хештег: "До 2000 ₽" -> "#до2000", "Маме" -> "#маме"
+  return '#' + label
+    .toLowerCase()
+    .replace(/[^a-zа-я0-9]+/gi, '') // убрать все кроме букв и цифр
+    .replace(/^до([0-9]+)/, 'до$1'); // для "до2000" оставить как есть
+}
+
+function ProductCategories({ selected, onSelect }: { selected: string[], onSelect: (cat: string) => void }) {
+  return (
+    <div className="w-full overflow-x-auto py-3 sm:py-4 mb-4 sm:mb-6">
+      <div className="flex gap-2 sm:gap-4 min-w-max px-1 sm:px-2">
+        {categories.map((cat, i) => {
+          const hashtag = getCategoryHashtag(cat.label);
+          const isActive = selected.includes(hashtag);
+          return (
+            <div
+              key={cat.label}
+              className={`flex flex-col items-center min-w-[64px] sm:min-w-[80px] cursor-pointer group`}
+              onClick={() => onSelect(hashtag)}
+            >
+              <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-md flex items-center justify-center text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-105 group-hover:shadow-lg transition
+                ${isActive ? 'bg-gradient-to-br from-[#FFF5B4] to-[#FFE066] scale-110 shadow-lg' : 'bg-white'}`}
+              >
+                <img src={cat.icon} alt={cat.label} className="w-full h-full object-cover rounded-full" />
+              </div>
+              <span className={`text-sm sm:text-xs text-[#FFF5B4] font-medium text-center whitespace-nowrap group-hover:text-[#306A8F] transition ${isActive ? 'text-[#306A8F]' : ''}`}>
+                {cat.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function MainPage() {
   const [hoverStates, setHoverStates] = useState<Record<string, boolean>>({});
   const [bouquets, setBouquets] = useState<Bouquet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const toggleHover = (id: string, isHovering: boolean) => {
     setHoverStates(prev => ({ ...prev, [id]: isHovering }));
@@ -272,6 +325,7 @@ export default function MainPage() {
       }}
     >
       <AnimatedBackground />
+      <div className={styles.flowerBackground} />
       
       {/* Header section */}
       <motion.div 
@@ -389,12 +443,18 @@ export default function MainPage() {
           >
             Каждый букет — это отражение нашей любви к цветам. Мы используем только самые свежие и качественные цветы, чтобы создавать красивые композиции, которые порадуют ваших близких.
           </motion.p>
-          <motion.button 
+          <motion.a
+            href="https://wa.me/+79872521696"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               ...getButtonStyle(hoverStates['mainButton'] as boolean),
               width: isMobile ? '100%' : undefined,
               fontSize: isMobile ? '1rem' : '1.1rem',
               padding: isMobile ? '12px 0' : '15px 50px',
+              display: 'inline-block',
+              textAlign: 'center',
+              textDecoration: 'none',
             }}
             onMouseEnter={() => toggleHover('mainButton', true)}
             onMouseLeave={() => toggleHover('mainButton', false)}
@@ -402,7 +462,7 @@ export default function MainPage() {
             whileTap={buttonTap}
           >
             Заказать букет
-          </motion.button>
+          </motion.a>
         </motion.div>
 
         {/* Our works section */}
@@ -427,6 +487,13 @@ export default function MainPage() {
           >
             Наши работы
           </motion.h2>
+          <ProductCategories selected={selectedCategories} onSelect={(cat) => {
+            setSelectedCategories(prev =>
+              prev.includes(cat)
+                ? prev.filter(c => c !== cat)
+                : [...prev, cat]
+            );
+          }} />
           
           {loading ? (
             <motion.div
@@ -456,7 +523,13 @@ export default function MainPage() {
                 margin: 0,
               }}
             >
-              {bouquets.slice(0, 6).map((bouquet) => (
+              {(selectedCategories.length > 0
+                ? bouquets.filter(bouquet =>
+                    bouquet.description &&
+                    selectedCategories.some(cat => bouquet.description.toLowerCase().includes(cat))
+                  )
+                : bouquets
+              ).slice(0, 6).map((bouquet) => (
                 <motion.div 
                   key={bouquet.id}
                   whileHover={cardHover}
