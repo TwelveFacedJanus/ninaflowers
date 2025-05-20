@@ -69,9 +69,9 @@ class ManageBouquets:
             return bouquet
 
     @staticmethod
-    async def remove_bouquet(bouquet_name: str):
+    async def remove_bouquet(bouquet_id: int):
         with Session() as session:
-            bouquet = session.query(Bouquet).filter(Bouquet.name == bouquet_name).first()
+            bouquet = session.query(Bouquet).filter(Bouquet.id == bouquet_id).first()
             if bouquet:
                 session.delete(bouquet)
                 session.commit()
