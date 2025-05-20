@@ -22,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${onest.className} antialiased`}
+        style={{ background: '#186697' }}
       >
         {children}
       </body>

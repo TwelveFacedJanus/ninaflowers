@@ -81,12 +81,77 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
+.workCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+  max-width: 260px;
+  min-width: 0;
+  width: 100%;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.workCard h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+}
+
+.workCard p {
+  margin: 0 0 10px 0;
+  color: #a0aec0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  max-height: 3.6em;
+}
+
+.workCardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.workCardImageGradient {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* Сетки */
 .worksGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, min-content));
+  gap: 16px;
   margin-bottom: 50px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center;
+  justify-content: center;
+}
+
+.worksGrid.fewCards {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  max-width: 100%;
 }
 
 .featuresGrid {
@@ -100,11 +165,21 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
+  .worksGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+    gap: 18px;
+  }
 }
 @media (max-width: 600px) {
   .featuresGrid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  .worksGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 10px;
   }
 }
 
@@ -167,19 +242,6 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width: 900px) {
-  .worksGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-  }
-}
-@media (max-width: 600px) {
-  .worksGrid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-}
-
 .flowerBackground {
   position: fixed;
   top: 0;
@@ -191,6 +253,62 @@
   background-image: url('/Flower.svg');
   background-repeat: no-repeat;
   background-size: 70vw auto;
-  background-position: right 0 bottom -200px;
+  background-position: right 0 bottom -300px;
   opacity: 0.18;
+}
+
+@media (max-width: 600px) {
+  .flowerBackground {
+    background-position: right 0 bottom 0;
+  }
+}
+
+.categoriesScrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #FFD600 #e0e7ef;
+}
+.categoriesScrollbar::-webkit-scrollbar {
+  height: 6px;
+  background: #e0e7ef;
+  border-radius: 6px;
+}
+.categoriesScrollbar::-webkit-scrollbar-thumb {
+  background: #FFD600;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.categoriesScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #FFC300;
+}
+
+.magicShimmer {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, #fff 0%, #ffe066 40%, #fff 60%, #fff5b4 100%);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .magicShimmer {
+    font-size: 1.3rem !important;
+    line-height: 1.25 !important;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    word-break: break-word;
+    white-space: normal;
+    display: block;
+  }
 }

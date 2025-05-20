@@ -159,6 +159,14 @@ interface Bouquet {
   photo_base64?: string;
 }
 
+interface Petal {
+  duration: number;
+  delay: number;
+  size: number;
+  left: number;
+  rotate: number;
+}
+
 // Хук для ширины экрана
 function useWindowWidth() {
   const [width, setWidth] = useState(1200);
@@ -174,17 +182,17 @@ function useWindowWidth() {
 }
 
 const categories = [
-  { label: "До 2000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
-  { label: "До 3000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
-  { label: "До 5000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
-  { label: "До 10000 ₽", icon: "https://content2.flowwow-images.com/data/giftSelection/15/1729071277-670f88ade70bc-web_image_second.jpg" },
-  { label: "Маме", icon: "https://content3.flowwow-images.com/data/giftSelection/4/1723644472-66bcba38abcfb-web_image_second.jpg" },
-  { label: "На день рождения", icon: "https://content3.flowwow-images.com/data/giftSelection/6/1723648842-66bccb4a73a90-web_image_second.jpg" },
-  { label: "Любимой девушке", icon: "https://content3.flowwow-images.com/data/giftSelection/5/1723648605-66bcca5de6111-web_image_second.jpg" },
-  { label: "Бабушке", icon: "https://content3.flowwow-images.com/data/giftSelection/9/1723705422-66bda84e5cdea-web_image_second.jpg" },
-  { label: "Мужчине", icon: "https://content2.flowwow-images.com/data/giftSelection/14/1723794381-66bf03cdc394b-web_image_second.jpg" },
-  { label: "Друзьям", icon: "https://content2.flowwow-images.com/data/giftSelection/13/1723794170-66bf02fabe04d-web_image_second.jpg" },
-  { label: "Композиции", icon: "https://content3.flowwow-images.com/data/giftSelection/8/1723705146-66bda73a25e74-web_image_second.jpg" },
+  { label: "До 2000 ₽", icon: "/photo_2025-05-19 15.18.26.jpeg" },
+  { label: "До 3000 ₽", icon: "/photo_2025-05-19 15.18.28.jpeg" },
+  { label: "До 5000 ₽", icon: "/photo_2025-05-19 15.18.31.jpeg" },
+  { label: "До 10000 ₽", icon: "/photo_2025-05-19 15.18.34.jpeg" },
+  { label: "Маме", icon: "/photo_2025-05-19 15.18.36.jpeg" },
+  { label: "На день рождения", icon: "/photo_2025-05-19 15.18.37.jpeg" },
+  { label: "Любимой девушке", icon: "/photo_2025-05-19 15.18.38.jpeg" },
+  { label: "Бабушке", icon: "/photo_2025-05-19 15.18.39.jpeg" },
+  { label: "Мужчине", icon: "/photo_2025-05-20 15.39.23.jpg" },
+  { label: "Друзьям", icon: "/2025-05-20 15.39.28.jpg" },
+  { label: "Композиции", icon: "/2025-05-20 15.42.02.jpg" },
 ];
 
 function getCategoryHashtag(label: string): string {
@@ -196,9 +204,17 @@ function getCategoryHashtag(label: string): string {
 }
 
 function ProductCategories({ selected, onSelect }: { selected: string[], onSelect: (cat: string) => void }) {
+  const width = useWindowWidth();
+  const isMobile = width < 600;
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="w-full overflow-x-auto py-3 sm:py-4 mb-4 sm:mb-6">
-      <div className="flex gap-2 sm:gap-4 min-w-max px-1 sm:px-2">
+    <div className={`w-full${isMobile ? ' overflow-x-auto' : ' overflow-x-hidden'} py-3 sm:py-4 mb-4 sm:mb-6`}>
+      <div
+        ref={scrollRef}
+        className={`flex gap-2 sm:gap-4 px-1 sm:px-2 justify-center${isMobile ? ' min-w-max' : ''} ${styles.categoriesScrollbar}`}
+        style={!isMobile ? {overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none'} : {}}
+      >
         {categories.map((cat) => {
           const hashtag = getCategoryHashtag(cat.label);
           const isActive = selected.includes(hashtag);
@@ -213,7 +229,10 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
               >
                 <Image src={cat.icon} alt={cat.label} width={64} height={64} className="w-full h-full object-cover rounded-full" />
               </div>
-              <span className={`text-sm sm:text-xs text-[#FFF5B4] font-medium text-center whitespace-nowrap group-hover:text-[#306A8F] transition ${isActive ? 'text-[#306A8F]' : ''}`}>
+              <span
+                className={`text-sm sm:text-xs text-[#FFF5B4] font-medium text-center group-hover:text-[#306A8F] transition ${isActive ? 'text-[#306A8F]' : ''}`}
+                style={{ maxWidth: '80px', wordBreak: 'break-word', whiteSpace: 'normal' }}
+              >
                 {cat.label}
               </span>
             </div>
@@ -224,12 +243,80 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
   );
 }
 
+// MagicPetals: анимированные лепестки на фоне
+function MagicPetals() {
+  const [petals, setPetals] = useState<Petal[]>([]);
+  useEffect(() => {
+    const arr = Array.from({ length: 12 }).map(() => ({
+      duration: 8 + Math.random() * 6,
+      delay: Math.random() * 6,
+      size: 32 + Math.random() * 32,
+      left: Math.random() * 100,
+      rotate: Math.random() * 360,
+    }));
+    setPetals(arr);
+  }, []);
+  if (petals.length === 0) return null;
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 1 }}>
+      {petals.map((p, i) => (
+        <motion.svg
+          key={i}
+          width={p.size}
+          height={p.size}
+          viewBox="0 0 32 32"
+          style={{ position: 'absolute', left: `${p.left}%`, top: '-10%', zIndex: 1 }}
+          initial={{ y: 0, opacity: 0, rotate: p.rotate }}
+          animate={{ y: '110vh', opacity: [0, 0.7, 0], rotate: p.rotate + 180 }}
+          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
+        >
+          <ellipse cx="16" cy="16" rx="12" ry="6" fill="#FFD6E0" fillOpacity={0.5} />
+          <ellipse cx="16" cy="16" rx="8" ry="3" fill="#FDC612" fillOpacity={0.3} />
+        </motion.svg>
+      ))}
+    </div>
+  );
+}
+
+// Анимация появления по буквам с shimmer после появления
+function AnimatedHeadline({ text }: { text: string }) {
+  const [showShimmer, setShowShimmer] = useState(false);
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowShimmer(true), text.length * 40 + 600);
+    return () => clearTimeout(timeout);
+  }, [text]);
+  return (
+    <span style={{ position: 'relative', display: 'inline-block' }}>
+      <span style={{
+        opacity: showShimmer ? 0 : 1,
+        position: showShimmer ? 'absolute' : 'static',
+        left: 0, top: 0, width: '100%', height: '100%',
+        display: 'inline-block',
+      }}>
+        {text.split('').map((char, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.04, duration: 0.5, type: 'spring', stiffness: 120 }}
+            style={{ display: 'inline-block', position: 'relative' }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </motion.span>
+        ))}
+      </span>
+      {showShimmer && <span className={styles.magicShimmer} style={{ position: 'static', left: 0, top: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>{text}</span>}
+    </span>
+  );
+}
+
 export default function MainPage() {
   const [hoverStates, setHoverStates] = useState<Record<string, boolean>>({});
   const [bouquets, setBouquets] = useState<Bouquet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sparklesArr, setSparklesArr] = useState<{top: number, left: number, delay: number, duration: number}[][]>([]);
 
   const toggleHover = (id: string, isHovering: boolean) => {
     setHoverStates(prev => ({ ...prev, [id]: isHovering }));
@@ -253,6 +340,43 @@ export default function MainPage() {
 
     fetchBouquets();
   }, []);
+
+  useEffect(() => {
+    setSparklesArr(
+      Array.from({ length: bouquets.length }).map(() =>
+        Array.from({ length: 7 }).map(() => ({
+          top: Math.random() * 90 + 2,
+          left: Math.random() * 90 + 2,
+          delay: Math.random(),
+          duration: 1.2 + Math.random(),
+        }))
+      )
+    );
+  }, [bouquets.length]);
+
+  // Моковые карточки для dev-режима (если нет данных из БД)
+  useEffect(() => {
+    if (!loading && bouquets.length === 0) {
+      setBouquets([
+        { id: 1, name: 'Розы для мамы', price: 1500, description: 'Нежные розы для самого дорогого человека #маме #до2000', photo_base64: '/photo_2025-05-19 15.18.26.jpeg' },
+        { id: 2, name: 'Весенний букет', price: 2200, description: 'Яркий весенний букет #до3000', photo_base64: '/photo_2025-05-19 15.18.28.jpeg' },
+        { id: 3, name: 'Для любимой', price: 3500, description: 'Романтический букет #любимой #до5000', photo_base64: '/photo_2025-05-19 15.18.31.jpeg' },
+        { id: 4, name: 'Праздничный', price: 4800, description: 'Пышный букет для праздника #праздник #до5000', photo_base64: '/photo_2025-05-19 15.18.34.jpeg' },
+        { id: 5, name: 'Свадебный', price: 9000, description: 'Букет для невесты #свадьба #до10000', photo_base64: '/photo_2025-05-19 15.18.36.jpeg' },
+        { id: 6, name: 'Для мужчины', price: 2000, description: 'Стильный букет для мужчины #мужчине #до3000', photo_base64: '/photo_2025-05-20 15.39.23.jpg' },
+        { id: 7, name: 'Друзьям', price: 1700, description: 'Букет для друзей #друзьям #до2000', photo_base64: '/2025-05-20 15.39.28.jpg' },
+        { id: 8, name: 'Композиция', price: 3200, description: 'Авторская композиция #композиции #до5000', photo_base64: '/2025-05-20 15.39.34.jpg' },
+        { id: 9, name: 'Бабушке', price: 1800, description: 'Тёплый букет для бабушки #бабушке #до2000', photo_base64: '/photo_2025-05-19 15.18.39.jpeg' },
+        { id: 10, name: 'На день рождения', price: 2500, description: 'Праздничный букет #деньрождения #до3000', photo_base64: '/photo_2025-05-19 15.18.37.jpeg' },
+        { id: 11, name: 'Летний микс', price: 2700, description: 'Яркий летний микс #до3000', photo_base64: '/photo_2025-05-19 15.18.38.jpeg' },
+        { id: 12, name: 'Экзотика', price: 6000, description: 'Экзотический букет #до10000', photo_base64: '/2025-05-20 15.39.46.jpg' },
+        { id: 13, name: 'Солнечный', price: 2100, description: 'Жизнерадостный букет #до3000', photo_base64: '/2025-05-20 15.39.49.jpg' },
+        { id: 14, name: 'Для учителя', price: 1900, description: 'Букет для учителя #до2000', photo_base64: '/photo_2025-05-19 15.18.28.jpeg' },
+        { id: 15, name: 'Осенний', price: 2300, description: 'Осенний букет #до3000', photo_base64: '/photo_2025-05-19 15.18.31.jpeg' },
+        { id: 16, name: 'Для коллеги', price: 2600, description: 'Букет для коллеги #до3000', photo_base64: '/photo_2025-05-19 15.18.34.jpeg' },
+      ]);
+    }
+  }, [loading, bouquets.length]);
 
   const reviews = [
     {
@@ -304,6 +428,10 @@ export default function MainPage() {
 
   const width = useWindowWidth();
   const isMobile = width < 600;
+  let logoNavGap = 80;
+  if (width <= 1200 && width > 900) logoNavGap = 40;
+  else if (width <= 900 && width > 600) logoNavGap = 20;
+  else if (width <= 600) logoNavGap = 0;
 
   return (
     <motion.div 
@@ -320,11 +448,12 @@ export default function MainPage() {
         color: colorPalette.text,
         position: 'relative',
         boxSizing: 'border-box',
-        width: '100vw',
+        width: '100%',
         overflowX: 'hidden',
       }}
     >
       <AnimatedBackground />
+      <MagicPetals />
       <div className={styles.flowerBackground} />
       
       {/* Header section */}
@@ -342,7 +471,7 @@ export default function MainPage() {
           gap: isMobile ? '10px' : '0',
         }}
       >
-        <motion.div whileHover={{ scale: 1.05 }} style={{ marginBottom: isMobile ? 8 : 0 }}>
+        <motion.div whileHover={{ scale: 1.05 }} style={{ marginBottom: isMobile ? 8 : 0, marginRight: logoNavGap }}>
           <Image
             src='/logo.svg'
             width={isMobile ? 120 : 200}
@@ -350,40 +479,42 @@ export default function MainPage() {
             alt="logo"
           />
         </motion.div>
-        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', width: '100%', justifyContent: isMobile ? 'center' : 'flex-start' }}>
-          <motion.div 
-            style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', marginRight: isMobile ? 0 : 61, width: '100%', justifyContent: isMobile ? 'center' : 'flex-start' }}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {['О нас', 'Магазины', 'Контакты', 'Вакансии'].map((item, index) => (
-              <motion.button
-                key={index}
-                variants={itemVariants}
-                whileHover={{ color: colorPalette.primaryLight }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  color: colorPalette.text,
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  fontWeight: '500',
-                  textAlign: isMobile ? 'center' : 'left',
-                }}
-              >
-                {item}
-              </motion.button>
-            ))}
-          </motion.div>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', width: '100%', justifyContent: isMobile ? 'center' : 'flex-end' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', width: '100%', justifyContent: isMobile ? 'center' : 'flex-end', flexGrow: 1 }}>
+            <motion.div 
+              style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px' }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {['О нас', 'Магазины', 'Контакты', 'Вакансии'].map((item, index) => (
+                <motion.button
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ color: colorPalette.primaryLight }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    color: colorPalette.text,
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    textAlign: isMobile ? 'center' : 'left',
+                  }}
+                >
+                  {item}
+                </motion.button>
+              ))}
+            </motion.div>
+          </div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-start', marginTop: isMobile ? 8 : 0 }}
+            style={{ minWidth: isMobile ? 'unset' : 210, display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'center' : 'flex-end', marginTop: isMobile ? 8 : 0 }}
           >
-            <div style={{display: 'flex', gap: '8px', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start'}}>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-end'}}>
               <Image
                 src='/phone.svg'
                 width={15}
@@ -395,7 +526,7 @@ export default function MainPage() {
                 +7 987 252-16-96
               </p>
             </div>
-            <p style={{ margin: 0, fontSize: isMobile ? '0.7rem' : '0.8rem', color: colorPalette.lightText, textAlign: isMobile ? 'center' : 'left' }}>
+            <p style={{ margin: 0, fontSize: isMobile ? '0.7rem' : '0.8rem', color: colorPalette.lightText, textAlign: isMobile ? 'center' : 'right' }}>
               Бесплатный звонок по всей России
             </p>
           </motion.div>
@@ -427,10 +558,13 @@ export default function MainPage() {
               margin: '0 0 20px 0', 
               fontSize: isMobile ? '1.5rem' : '2.5rem', 
               fontWeight: 'bold',
-              color: colorPalette.text
+              color: colorPalette.text,
+              position: 'relative',
+              display: 'inline-block',
+              overflow: 'hidden',
             }}
           >
-            Свежие цветы, созданные с любовью
+            <AnimatedHeadline text="Свежие цветы, созданные с любовью" />
           </motion.h1>
           <motion.p 
             style={{ 
@@ -467,8 +601,8 @@ export default function MainPage() {
 
         {/* Our works section */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           style={{
@@ -508,11 +642,13 @@ export default function MainPage() {
             >
               Загрузка...
             </motion.div>
-          ) : error ? (
+          ) : error && bouquets.length === 0 ? (
             <div style={{ color: 'red' }}>Ошибка: {error}</div>
+          ) : error && bouquets.length > 0 ? (
+            <div style={{ color: 'orange', marginBottom: 16 }}>Показаны примеры букетов (нет соединения с сервером)</div>
           ) : (
             <motion.div 
-              className={styles.worksGrid}
+              className={bouquets.length <= 3 ? `${styles.worksGrid} ${styles.fewCards}` : styles.worksGrid}
               style={{
                 background: 'none',
                 backdropFilter: 'none',
@@ -521,22 +657,33 @@ export default function MainPage() {
                 opacity: 1,
                 width: '100%',
                 margin: 0,
+                justifyItems: 'center',
+                justifyContent: 'center',
               }}
             >
               {(selectedCategories.length > 0
-                ? bouquets.filter(bouquet =>
-                    bouquet.description &&
-                    selectedCategories.some(cat => bouquet.description.toLowerCase().includes(cat))
-                  )
+                ? bouquets.filter(bouquet => {
+                    if (!bouquet.description) return false;
+                    // Собираем все хештеги из description
+                    const descTags = (bouquet.description.match(/#[a-zа-я0-9]+/gi) || []).map(tag => tag.toLowerCase());
+                    // Приводим выбранные категории к нижнему регистру
+                    const selected = selectedCategories.map(tag => tag.toLowerCase());
+                    return selected.some(sel => descTags.includes(sel));
+                  })
                 : bouquets
-              ).slice(0, 6).map((bouquet) => (
+              ).slice(0, 6).map((bouquet, i) => (
                 <motion.div 
                   key={bouquet.id}
-                  whileHover={cardHover}
+                  className={styles.workCard}
+                  whileHover={{
+                    scale: 1.06,
+                    boxShadow: '0 0 32px 0 #FDC612, 0 0 0 2px #fff5b4',
+                    filter: 'brightness(1.08) drop-shadow(0 0 8px #fff5b4)',
+                  }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: 'rgba(255,255,255,0.85)',
                     borderRadius: '12px',
-                    padding: '12px',
+                    padding: 0,
                     opacity: 1,
                     filter: 'none',
                     backdropFilter: 'none',
@@ -548,72 +695,133 @@ export default function MainPage() {
                     minWidth: 0,
                     width: '100%',
                     margin: '0 auto',
+                    overflow: 'hidden',
+                    height: '320px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
                   }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {bouquet.photo_base64 ? (
-                    <div style={{ 
-                      width: '100%', 
-                      height: '250px', 
-                      position: 'relative',
-                      marginBottom: '15px'
-                    }}>
+                  {/* Блёстки */}
+                  {sparklesArr[i] && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none',
+                        zIndex: 4,
+                      }}
+                    >
+                      {sparklesArr[i].map((sp, j) => (
+                        <motion.div
+                          key={j}
+                          style={{
+                            position: 'absolute',
+                            top: `${sp.top}%`,
+                            left: `${sp.left}%`,
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            background: 'radial-gradient(circle, #fffbe6 0%, #ffe066 80%, transparent 100%)',
+                            opacity: 0.7,
+                            filter: 'blur(0.5px)',
+                          }}
+                          animate={{
+                            scale: [1, 1.5, 1],
+                            opacity: [0.7, 1, 0.7],
+                          }}
+                          transition={{
+                            duration: sp.duration,
+                            repeat: Infinity,
+                            repeatType: 'reverse',
+                            delay: sp.delay,
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  )}
+                  {/* Изображение на всю карточку */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 1,
+                  }}>
+                    {bouquet.photo_base64 ? (
                       <Image
                         src={
-                          bouquet.photo_base64.startsWith('data:image') 
-                            ? bouquet.photo_base64 
+                          bouquet.photo_base64.startsWith('data:image')
+                            ? bouquet.photo_base64
                             : `data:image/jpeg;base64,${bouquet.photo_base64}`
                         }
                         alt={bouquet.name}
                         fill
                         style={{
                           objectFit: 'cover',
-                          borderRadius: '8px'
+                          width: '100%',
+                          height: '100%',
                         }}
                         unoptimized
                       />
-                    </div>
-                  ) : (
-                    <div style={{ 
-                      width: '100%', 
-                      height: '250px',
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '15px'
-                    }}>
-                      Нет изображения
-                    </div>
-                  )}
-                  
-                  <h3 className="text-black" style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>
-                    {bouquet.name}
-                  </h3>
-                  <p style={{ margin: '0 0 10px 0', color: colorPalette.lightText }}>
-                    {bouquet.description}
-                  </p>
-                  <a
-                    href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${bouquet.name}" (ID: ${bouquet.id}).`)}"`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-block',
-                      marginTop: '10px',
-                      padding: '10px 24px',
-                      borderRadius: '8px',
-                      backgroundColor: colorPalette.primary,
-                      color: colorPalette.background,
-                      fontWeight: 'bold',
-                      fontSize: '1.1rem',
-                      textDecoration: 'none',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      transition: 'background 0.2s',
-                    }}
-                    onMouseOver={e => (e.currentTarget.style.backgroundColor = colorPalette.primaryLight)}
-                    onMouseOut={e => (e.currentTarget.style.backgroundColor = colorPalette.primary)}
-                  >
-                    {bouquet.price} ₽ — Заказать в WhatsApp
-                  </a>
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(255,255,255,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#888',
+                        fontSize: '1rem',
+                        zIndex: 1,
+                      }}>
+                        Нет изображения
+                      </div>
+                    )}
+                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%', background: 'linear-gradient(0deg, #000 20%, transparent 100%)', zIndex: 2 }} />
+                  </div>
+                  {/* Контент поверх изображения */}
+                  <div style={{
+                    position: 'relative',
+                    zIndex: 3,
+                    padding: '20px 16px 16px 16px',
+                    background: 'none',
+                    color: '#fff',
+                    textAlign: 'center',
+                  }}>
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#fff', textShadow: '0 2px 8px #000' }}>
+                      {bouquet.name}
+                    </h3>
+                    <a
+                      href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${bouquet.name}" (ID: ${bouquet.id}).`)}"`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        marginTop: '10px',
+                        padding: '10px 24px',
+                        borderRadius: '8px',
+                        backgroundColor: '#81e6d9',
+                        color: '#186697',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        textDecoration: 'none',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        transition: 'background 0.2s',
+                      }}
+                      onMouseOver={e => (e.currentTarget.style.backgroundColor = '#4fd1c5')}
+                      onMouseOut={e => (e.currentTarget.style.backgroundColor = '#81e6d9')}
+                    >
+                      {bouquet.price} ₽
+                    </a>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -629,7 +837,8 @@ export default function MainPage() {
                 color: hoverStates['viewAllButton'] ? colorPalette.background : colorPalette.primary, 
                 cursor: 'pointer',
                 fontSize: '1.1rem',
-                fontWeight: '600'
+                fontWeight: '600',
+                marginTop: '60px'
               }}
               onMouseEnter={() => toggleHover('viewAllButton', true)}
               onMouseLeave={() => toggleHover('viewAllButton', false)}
@@ -643,8 +852,8 @@ export default function MainPage() {
 
         {/* Why us section */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           style={{
@@ -701,7 +910,7 @@ export default function MainPage() {
               {
                 icon: '❤️',
                 title: 'С заботой о клиентах',
-                description: 'Гарантия возврата денег, если вам что-то не понравится'
+                description: 'Если что-то не понравилось, то мы поменяем букет на другой'
               }
             ].map((feature, index) => (
               <motion.div 
@@ -875,8 +1084,8 @@ export default function MainPage() {
 
         {/* Reviews section */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           style={{
@@ -973,24 +1182,108 @@ export default function MainPage() {
             ))}
           </motion.div>
 
-          <motion.button
-            style={{ 
-              padding: '12px 40px', 
-              borderRadius: '8px', 
-              border: `2px solid ${colorPalette.primary}`, 
-              backgroundColor: hoverStates['leaveReviewButton'] ? colorPalette.primary : 'transparent', 
-              color: hoverStates['leaveReviewButton'] ? colorPalette.background : colorPalette.primary, 
-              cursor: 'pointer',
-              fontSize: '1rem',
-              fontWeight: '600'
-            }}
-            onMouseEnter={() => toggleHover('leaveReviewButton', true)}
-            onMouseLeave={() => toggleHover('leaveReviewButton', false)}
-            whileHover={buttonHover}
-            whileTap={buttonTap}
-          >
-            Оставить отзыв
-          </motion.button>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+            <motion.a
+              href="https://2gis.ru/salavat/firm/70000001051600086/tab/reviews"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                padding: '12px 40px', 
+                borderRadius: '8px', 
+                border: `2px solid ${colorPalette.primary}`, 
+                backgroundColor: hoverStates['leaveReviewButton'] ? colorPalette.primary : 'transparent', 
+                color: hoverStates['leaveReviewButton'] ? colorPalette.background : colorPalette.primary, 
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: '600',
+                display: 'inline-block',
+                textAlign: 'center',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={() => toggleHover('leaveReviewButton', true)}
+              onMouseLeave={() => toggleHover('leaveReviewButton', false)}
+              whileHover={buttonHover}
+              whileTap={buttonTap}
+            >
+              Оставить отзыв (2ГИС)
+            </motion.a>
+            <motion.a
+              href="https://yandex.ru/maps/org/nina_flowers/13501990234/reviews/?ll=55.958493%2C53.344156&tab=reviews&z=16.73"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                padding: '12px 40px', 
+                borderRadius: '8px', 
+                border: `2px solid ${colorPalette.primary}`, 
+                backgroundColor: hoverStates['leaveReviewButtonYandex'] ? colorPalette.primary : 'transparent', 
+                color: hoverStates['leaveReviewButtonYandex'] ? colorPalette.background : colorPalette.primary, 
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: '600',
+                display: 'inline-block',
+                textAlign: 'center',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={() => toggleHover('leaveReviewButtonYandex', true)}
+              onMouseLeave={() => toggleHover('leaveReviewButtonYandex', false)}
+              whileHover={buttonHover}
+              whileTap={buttonTap}
+            >
+              Оставить отзыв (Яндекс)
+            </motion.a>
+          </div>
+        </motion.div>
+
+        {/* Map section */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 80 }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: 24, color: colorPalette.text }}>Где мы находимся</h2>
+          <div style={{ width: '100%', maxWidth: 900, borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', border: '2px solid #e0e7ef', background: '#fff' }}>
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=55.958368%2C53.344172&z=17&pt=55.958368,53.344172,pm2rdl"
+              width="100%"
+              height="400"
+              style={{ border: 0, minHeight: 300 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Nina Flowers на карте"
+            />
+          </div>
+        </div>
+
+        {/* Final magic block */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto',
+            marginBottom: 80,
+            marginTop: 80,
+            background: 'rgba(24, 102, 151, 0.7)',
+            minHeight: 220,
+          }}
+        >
+          <div style={{
+            borderRadius: 24,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            padding: '48px 32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: 240,
+            minHeight: 120,
+          }}>
+            <span className={styles.magicShimmer} style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '0.04em', textAlign: 'center', display: 'inline-block', lineHeight: 1.2, filter: 'drop-shadow(0 0 16px #ffe066)' }}>
+              Ждем Вас в Nina Flowers!
+            </span>
+          </div>
         </motion.div>
       </div>
     </motion.div>
