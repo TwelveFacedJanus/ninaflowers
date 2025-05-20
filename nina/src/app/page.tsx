@@ -358,22 +358,7 @@ export default function MainPage() {
   useEffect(() => {
     if (!loading && bouquets.length === 0) {
       setBouquets([
-        { id: 1, name: 'Розы для мамы', price: 1500, description: 'Нежные розы для самого дорогого человека #маме #до2000', photo_base64: '/photo_2025-05-19 15.18.26.jpeg' },
-        { id: 2, name: 'Весенний букет', price: 2200, description: 'Яркий весенний букет #до3000', photo_base64: '/photo_2025-05-19 15.18.28.jpeg' },
-        { id: 3, name: 'Для любимой', price: 3500, description: 'Романтический букет #любимой #до5000', photo_base64: '/photo_2025-05-19 15.18.31.jpeg' },
-        { id: 4, name: 'Праздничный', price: 4800, description: 'Пышный букет для праздника #праздник #до5000', photo_base64: '/photo_2025-05-19 15.18.34.jpeg' },
-        { id: 5, name: 'Свадебный', price: 9000, description: 'Букет для невесты #свадьба #до10000', photo_base64: '/photo_2025-05-19 15.18.36.jpeg' },
-        { id: 6, name: 'Для мужчины', price: 2000, description: 'Стильный букет для мужчины #мужчине #до3000', photo_base64: '/photo_2025-05-20 15.39.23.jpg' },
-        { id: 7, name: 'Друзьям', price: 1700, description: 'Букет для друзей #друзьям #до2000', photo_base64: '/2025-05-20 15.39.28.jpg' },
-        { id: 8, name: 'Композиция', price: 3200, description: 'Авторская композиция #композиции #до5000', photo_base64: '/2025-05-20 15.39.34.jpg' },
-        { id: 9, name: 'Бабушке', price: 1800, description: 'Тёплый букет для бабушки #бабушке #до2000', photo_base64: '/photo_2025-05-19 15.18.39.jpeg' },
-        { id: 10, name: 'На день рождения', price: 2500, description: 'Праздничный букет #деньрождения #до3000', photo_base64: '/photo_2025-05-19 15.18.37.jpeg' },
-        { id: 11, name: 'Летний микс', price: 2700, description: 'Яркий летний микс #до3000', photo_base64: '/photo_2025-05-19 15.18.38.jpeg' },
-        { id: 12, name: 'Экзотика', price: 6000, description: 'Экзотический букет #до10000', photo_base64: '/2025-05-20 15.39.46.jpg' },
-        { id: 13, name: 'Солнечный', price: 2100, description: 'Жизнерадостный букет #до3000', photo_base64: '/2025-05-20 15.39.49.jpg' },
-        { id: 14, name: 'Для учителя', price: 1900, description: 'Букет для учителя #до2000', photo_base64: '/photo_2025-05-19 15.18.28.jpeg' },
-        { id: 15, name: 'Осенний', price: 2300, description: 'Осенний букет #до3000', photo_base64: '/photo_2025-05-19 15.18.31.jpeg' },
-        { id: 16, name: 'Для коллеги', price: 2600, description: 'Букет для коллеги #до3000', photo_base64: '/photo_2025-05-19 15.18.34.jpeg' },
+        
       ]);
     }
   }, [loading, bouquets.length]);
@@ -659,6 +644,7 @@ export default function MainPage() {
                 margin: 0,
                 justifyItems: 'center',
                 justifyContent: 'center',
+                alignItems: bouquets.length <= 3 ? 'stretch' : undefined,
               }}
             >
               {(selectedCategories.length > 0
@@ -671,7 +657,7 @@ export default function MainPage() {
                     return selected.some(sel => descTags.includes(sel));
                   })
                 : bouquets
-              ).slice(0, 6).map((bouquet, i) => (
+              ).map((bouquet, i) => (
                 <motion.div 
                   key={bouquet.id}
                   className={styles.workCard}
