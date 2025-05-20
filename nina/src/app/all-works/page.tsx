@@ -15,27 +15,7 @@ interface Bouquet {
 }
 
 const mockBouquets: Bouquet[] = [
-  {
-    id: 1,
-    name: "Розовый рассвет",
-    description: "Нежный букет из розовых пионов и эвкалипта.",
-    price: 3500,
-    photo_base64: undefined, // Можно заменить на base64 или использовать public/photo_*
-  },
-  {
-    id: 2,
-    name: "Летний сад",
-    description: "Яркий микс из сезонных цветов.",
-    price: 2900,
-    photo_base64: undefined,
-  },
-  {
-    id: 3,
-    name: "Белая классика",
-    description: "Классический букет из белых роз.",
-    price: 4100,
-    photo_base64: undefined,
-  },
+  
 ];
 
 export default function AllWorksPage() {
