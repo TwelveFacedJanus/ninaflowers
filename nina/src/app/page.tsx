@@ -199,7 +199,7 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
   return (
     <div className="w-full overflow-x-auto py-3 sm:py-4 mb-4 sm:mb-6">
       <div className="flex gap-2 sm:gap-4 min-w-max px-1 sm:px-2">
-        {categories.map((cat, i) => {
+        {categories.map((cat) => {
           const hashtag = getCategoryHashtag(cat.label);
           const isActive = selected.includes(hashtag);
           return (
@@ -211,7 +211,7 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
               <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-md flex items-center justify-center text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-105 group-hover:shadow-lg transition
                 ${isActive ? 'bg-gradient-to-br from-[#FFF5B4] to-[#FFE066] scale-110 shadow-lg' : 'bg-white'}`}
               >
-                <img src={cat.icon} alt={cat.label} className="w-full h-full object-cover rounded-full" />
+                <Image src={cat.icon} alt={cat.label} width={64} height={64} className="w-full h-full object-cover rounded-full" />
               </div>
               <span className={`text-sm sm:text-xs text-[#FFF5B4] font-medium text-center whitespace-nowrap group-hover:text-[#306A8F] transition ${isActive ? 'text-[#306A8F]' : ''}`}>
                 {cat.label}
