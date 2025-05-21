@@ -630,15 +630,7 @@ export default function MainPage() {
           ) : (
             <motion.div
               className={styles.worksGrid}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: '24px',
-                width: '100%',
-                maxWidth: '1200px',
-                margin: '0 auto',
-                padding: '0 20px'
-              }}
+              style={{ margin: '0 auto' }}
             >
               {(selectedCategories.length > 0
                 ? bouquets.filter(bouquet => {

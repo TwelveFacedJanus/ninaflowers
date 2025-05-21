@@ -138,13 +138,11 @@
 .worksGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 50px;
+  gap: 24px;
   max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  margin: 0 auto;
   justify-items: center;
-  justify-content: center;
 }
 
 .worksGrid.fewCards {
@@ -161,25 +159,21 @@
 }
 
 @media (max-width: 900px) {
+  .worksGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .featuresGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
-  .worksGrid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: none;
-    gap: 18px;
-  }
 }
 @media (max-width: 600px) {
+  .worksGrid {
+    grid-template-columns: 1fr;
+  }
   .featuresGrid {
     grid-template-columns: 1fr;
     gap: 12px;
-  }
-  .worksGrid {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-    gap: 10px;
   }
 }
 
