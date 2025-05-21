@@ -609,17 +609,12 @@ export default function MainPage() {
           gap: isMobile ? '10px' : '0',
         }}
       >
-        <motion.div
-          whileHover={{ scale: 1.12, rotate: 12, boxShadow: '0 0 32px 0 #ffe066, 0 0 0 8px #fff5b4' }}
-          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-          style={{ marginBottom: isMobile ? 8 : 0, marginRight: logoNavGap, borderRadius: '50%' }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} style={{ marginBottom: isMobile ? 8 : 0, marginRight: logoNavGap }}>
           <Image
             src='/logo.svg'
             width={isMobile ? 120 : 200}
             height={isMobile ? 120 : 200}
             alt="logo"
-            style={{ borderRadius: '50%', transition: 'box-shadow 0.3s' }}
           />
         </motion.div>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? '8px' : '21px', width: '100%', justifyContent: isMobile ? 'center' : 'flex-end' }}>
