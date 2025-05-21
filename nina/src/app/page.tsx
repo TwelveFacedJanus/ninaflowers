@@ -210,7 +210,7 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
 
   return (
     <div className={`w-full${isMobile ? ' overflow-x-auto' : ' overflow-x-hidden'} py-3 sm:py-4 mb-4 sm:mb-6`}
-      style={{ overflow: 'visible', paddingTop: isMobile ? 18 : 24 }}
+      style={{ overflow: 'visible', paddingTop: isMobile ? 18 : 24, paddingLeft: 24, paddingRight: 24 }}
     >
       <div
         ref={scrollRef}
@@ -340,6 +340,11 @@ export default function MainPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sparklesArr, setSparklesArr] = useState<{top: number, left: number, delay: number, duration: number}[][]>([]);
   const [showPopup, setShowPopup] = useState(false);
+  // Cookie banner state
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
+  const [devHover, setDevHover] = useState(false);
+  // Модальное окно для букета
+  const [modalBouquet, setModalBouquet] = useState<Bouquet | null>(null);
 
   const toggleHover = (id: string, isHovering: boolean) => {
     setHoverStates(prev => ({ ...prev, [id]: isHovering }));
@@ -447,6 +452,11 @@ export default function MainPage() {
       if (!popupClosed) {
         setShowPopup(true);
       }
+      // Cookie banner logic
+      const cookieChoice = localStorage.getItem('cookieChoice');
+      if (!cookieChoice) {
+        setShowCookieBanner(true);
+      }
     }
   }, []);
 
@@ -456,6 +466,23 @@ export default function MainPage() {
       localStorage.setItem('popupClosed', 'true');
     }
   };
+
+  // Cookie banner handlers
+  const handleAcceptCookies = () => {
+    setShowCookieBanner(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cookieChoice', 'accepted');
+    }
+  };
+  const handleDeclineCookies = () => {
+    setShowCookieBanner(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cookieChoice', 'declined');
+    }
+  };
+
+  const handleOpenModal = (bouquet: Bouquet) => setModalBouquet(bouquet);
+  const handleCloseModal = () => setModalBouquet(null);
 
   return (
     <motion.div 
@@ -780,8 +807,10 @@ export default function MainPage() {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'flex-end',
+                    cursor: 'pointer',
                   }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => handleOpenModal(bouquet)}
                 >
                   {/* Блёстки */}
                   {sparklesArr[i] && (
@@ -1367,6 +1396,239 @@ export default function MainPage() {
           </div>
         </motion.div>
       </>
+
+      {/* Cookie Banner */}
+      {showCookieBanner && (
+        <motion.div
+          initial={{ y: 80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ duration: 0.5, type: 'spring', stiffness: 200, damping: 22 }}
+          style={{
+            position: 'fixed',
+            left: 0,
+            bottom: 0,
+            width: '100vw',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            pointerEvents: 'auto',
+            background: 'none',
+          }}
+        >
+          <div style={{
+            background: 'rgba(24, 102, 151, 0.98)',
+            color: '#fff',
+            borderRadius: 16,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+            padding: '20px 32px',
+            margin: 16,
+            maxWidth: 480,
+            width: '100%',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: 'center',
+            gap: isMobile ? 16 : 24,
+            fontSize: isMobile ? '0.98rem' : '1.08rem',
+          }}>
+            <span style={{ flex: 1, marginBottom: isMobile ? 10 : 0 }}>
+              Мы используем файлы cookie для улучшения работы сайта.
+            </span>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={handleAcceptCookies}
+                style={{
+                  background: '#25D366',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 22px',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(37,211,102,0.08)',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Принять
+              </button>
+              <button
+                onClick={handleDeclineCookies}
+                style={{
+                  background: '#a0aec0',
+                  color: '#186697',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '10px 22px',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(160,174,192,0.08)',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Отклонить
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Модальное окно букета */}
+      {modalBouquet && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(24,102,151,0.25)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(2px)',
+          }}
+          onClick={handleCloseModal}
+        >
+          <motion.div
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.92, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            style={{
+              background: '#fff',
+              borderRadius: 20,
+              boxShadow: '0 8px 32px rgba(24,102,151,0.18)',
+              padding: isMobile ? '18px 8px' : '32px 32px 28px 32px',
+              maxWidth: 400,
+              width: '90vw',
+              position: 'relative',
+              zIndex: 10001,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Кнопка закрытия */}
+            <button
+              onClick={handleCloseModal}
+              style={{
+                position: 'absolute',
+                top: 12,
+                right: 16,
+                background: 'none',
+                border: 'none',
+                fontSize: 26,
+                color: '#186697',
+                cursor: 'pointer',
+                fontWeight: 700,
+                zIndex: 2,
+              }}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+            {/* Фото */}
+            {modalBouquet.photo_base64 ? (
+              <img
+                src={modalBouquet.photo_base64.startsWith('data:image') ? modalBouquet.photo_base64 : `data:image/jpeg;base64,${modalBouquet.photo_base64}`}
+                alt={modalBouquet.name}
+                style={{ width: '100%', maxWidth: 320, borderRadius: 14, marginBottom: 18, objectFit: 'cover', aspectRatio: '1/1', background: '#f5f5f5' }}
+              />
+            ) : (
+              <div style={{ width: '100%', height: 180, background: '#f5f5f5', borderRadius: 14, marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+                Нет изображения
+              </div>
+            )}
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 10, color: '#186697' }}>{modalBouquet.name}</h2>
+            <div style={{ color: '#186697', fontSize: '1.05rem', marginBottom: 16, minHeight: 40 }}>
+              {modalBouquet.description || 'Описание отсутствует.'}
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '1.15rem', color: '#FDC612', marginBottom: 18 }}>
+              {modalBouquet.price} ₽
+            </div>
+            <a
+              href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${modalBouquet.name}" (ID: ${modalBouquet.id}).`)}"`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-block',
+                padding: '12px 32px',
+                borderRadius: 10,
+                background: '#25D366',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '1.08rem',
+                textDecoration: 'none',
+                boxShadow: '0 2px 8px rgba(37,211,102,0.08)',
+                transition: 'background 0.2s',
+                marginTop: 6,
+              }}
+            >
+              Хочу такой
+            </a>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Footer */}
+      <footer style={{
+        width: '100%',
+        background: '#186697',
+        color: '#fff',
+        padding: isMobile ? '28px 8px 18px 8px' : '32px 0 18px 0',
+        textAlign: 'center',
+        fontSize: isMobile ? '0.98rem' : '1.08rem',
+        marginTop: 48,
+        borderTop: '2px solid #ffe06633',
+        boxShadow: '0 -2px 16px rgba(24,102,151,0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: isMobile ? 10 : 16,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 6 }}>
+          <img src="/logo.svg" alt="Nina Flowers" style={{ width: 36, height: 36, marginRight: 8, filter: 'brightness(0) invert(1)' }} />
+          <span style={{ fontWeight: 700, fontSize: isMobile ? '1.1rem' : '1.2rem', letterSpacing: '0.02em' }}>Nina Flowers</span>
+        </div>
+        <div style={{ marginBottom: 4 }}>
+          <a href="tel:+79872521696" style={{ color: '#ffe066', textDecoration: 'none', fontWeight: 600, marginRight: 12 }}>+7 987 252-16-96</a>
+          <span style={{ color: '#a0aec0', fontSize: '0.95em' }}>| г. Салават</span>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <a href="/privacy" style={{ color: '#fff5b4', textDecoration: 'underline', marginRight: 16, fontSize: '0.97em' }}>Политика конфиденциальности</a>
+        </div>
+        <div
+          style={{ color: '#a0aec0', fontSize: '0.92em', marginTop: 6, cursor: 'pointer', minHeight: 22 }}
+          onMouseEnter={() => setDevHover(true)}
+          onMouseLeave={() => setDevHover(false)}
+        >
+          {devHover ? (
+            <a
+              href="https://t.me/TwelveFacedJanus"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#229ED9', textDecoration: 'underline', fontWeight: 600 }}
+            >
+              @TwelveFacedJanus
+            </a>
+          ) : (
+            'Разработка: Daniil (Twelve Faced Janus) Ermolaev'
+          )}
+        </div>
+        <div style={{ color: '#ffe066', fontSize: '0.95em', opacity: 0.85 }}>
+          © {new Date().getFullYear()} Nina Flowers. Все права защищены.
+        </div>
+      </footer>
     </motion.div>
   );
 }
