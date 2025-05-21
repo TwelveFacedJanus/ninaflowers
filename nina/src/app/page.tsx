@@ -209,11 +209,13 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className={`w-full${isMobile ? ' overflow-x-auto' : ' overflow-x-hidden'} py-3 sm:py-4 mb-4 sm:mb-6`}>
+    <div className={`w-full${isMobile ? ' overflow-x-auto' : ' overflow-x-hidden'} py-3 sm:py-4 mb-4 sm:mb-6`}
+      style={{ overflow: 'visible', paddingTop: isMobile ? 18 : 24 }}
+    >
       <div
         ref={scrollRef}
         className={`flex gap-2 sm:gap-4 px-1 sm:px-2 justify-center${isMobile ? ' min-w-max' : ''} ${styles.categoriesScrollbar}`}
-        style={!isMobile ? {overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none'} : {}}
+        style={!isMobile ? {overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', overflow: 'visible'} : {overflow: 'visible'}}
       >
         {categories.map((cat) => {
           const hashtag = getCategoryHashtag(cat.label);
@@ -224,14 +226,34 @@ function ProductCategories({ selected, onSelect }: { selected: string[], onSelec
               className={`flex flex-col items-center min-w-[64px] sm:min-w-[80px] cursor-pointer group`}
               onClick={() => onSelect(hashtag)}
             >
-              <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-md flex items-center justify-center text-xl sm:text-2xl mb-1 sm:mb-2 group-hover:scale-105 group-hover:shadow-lg transition
-                ${isActive ? 'bg-gradient-to-br from-[#FFF5B4] to-[#FFE066] scale-110 shadow-lg' : 'bg-white'}`}
-              >
-                <Image src={cat.icon} alt={cat.label} width={64} height={64} className="w-full h-full object-cover rounded-full" />
+              {/* Внешний div для свечения и border (круг) */}
+              <div style={{
+                position: 'relative',
+                width: '3rem',
+                height: '3rem',
+                minWidth: '3rem',
+                minHeight: '3rem',
+                maxWidth: '100%',
+                aspectRatio: '1/1',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: isActive ? 'linear-gradient(120deg, #FFF5B4 0%, #FFE066 100%)' : '',
+                border: isActive ? '2.5px solid #FDC612' : 'none',
+                boxShadow: isActive ? '0 0 32px 8px #ffe06699' : '0 2px 8px rgba(0,0,0,0.08)',
+                filter: isActive ? 'brightness(1.08) drop-shadow(0 0 8px #ffe066)' : undefined,
+                transition: 'all 0.25s',
+                zIndex: 1,
+                overflow: 'visible',
+              }}>
+                <Image src={cat.icon} alt={cat.label} width={64} height={64}
+                  style={{ objectFit: 'cover', objectPosition: 'center 65%', width: '100%', height: '100%', borderRadius: '50%' }}
+                />
               </div>
               <span
                 className={`text-sm sm:text-xs text-[#FFF5B4] font-medium text-center group-hover:text-[#306A8F] transition ${isActive ? 'text-[#306A8F]' : ''}`}
-                style={{ maxWidth: '80px', wordBreak: 'break-word', whiteSpace: 'normal' }}
+                style={{ maxWidth: '80px', wordBreak: 'break-word', whiteSpace: 'normal', fontWeight: isActive ? 700 : 500, textShadow: isActive ? '0 2px 8px #ffe066' : undefined }}
               >
                 {cat.label}
               </span>
@@ -317,6 +339,7 @@ export default function MainPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sparklesArr, setSparklesArr] = useState<{top: number, left: number, delay: number, duration: number}[][]>([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const toggleHover = (id: string, isHovering: boolean) => {
     setHoverStates(prev => ({ ...prev, [id]: isHovering }));
@@ -418,6 +441,22 @@ export default function MainPage() {
   else if (width <= 900 && width > 600) logoNavGap = 20;
   else if (width <= 600) logoNavGap = 0;
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const popupClosed = localStorage.getItem('popupClosed');
+      if (!popupClosed) {
+        setShowPopup(true);
+      }
+    }
+  }, []);
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('popupClosed', 'true');
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -437,6 +476,80 @@ export default function MainPage() {
         overflowX: 'hidden',
       }}
     >
+      {/* Popup предупреждение */}
+      {showPopup && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35 }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'linear-gradient(120deg, rgba(253,198,18,0.18) 0%, rgba(24,102,151,0.22) 100%)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.85, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            style={{
+              background: 'linear-gradient(120deg, #fffbe6 0%, #ffe066 100%)',
+              color: '#222',
+              borderRadius: 20,
+              padding: '38px 28px 28px 28px',
+              maxWidth: 370,
+              minWidth: 260,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+              textAlign: 'center',
+              position: 'relative',
+              border: '1.5px solid #ffe066',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{
+              fontSize: '2.5rem',
+              marginBottom: 12,
+              filter: 'drop-shadow(0 2px 8px #ffe066)',
+              userSelect: 'none',
+            }}>🌸</div>
+            <div style={{ fontSize: '1.13rem', marginBottom: 28, fontWeight: 500, color: '#186697', lineHeight: 1.5 }}>
+              Букеты на фото могут отличаться от реального товара,<br />так как каждый букет — <b>индивидуален</b>.
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.07, backgroundColor: '#ffd600', color: '#186697' }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleClosePopup}
+              style={{
+                padding: '12px 38px',
+                borderRadius: 10,
+                border: 'none',
+                background: '#186697',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '1.08rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(24,102,151,0.08)',
+                transition: 'background 0.2s, color 0.2s',
+                letterSpacing: '0.01em',
+              }}
+            >
+              Понятно
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
       <AnimatedBackground />
       <MagicPetals />
       <div className={styles.flowerBackground} />
