@@ -351,6 +351,16 @@ export default function MainPage() {
   };
 
   useEffect(() => {
+    // При инициализации пробуем загрузить из localStorage
+    if (typeof window !== 'undefined') {
+      const savedBouquets = localStorage.getItem('bouquets');
+      if (savedBouquets) {
+        try {
+          setBouquets(JSON.parse(savedBouquets));
+          setLoading(false);
+        } catch {}
+      }
+    }
     const fetchBouquets = async () => {
       try {
         const response = await fetch('/api/bouquets');
@@ -359,13 +369,16 @@ export default function MainPage() {
         }
         const data = await response.json();
         setBouquets(data);
+        // Сохраняем в localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('bouquets', JSON.stringify(data));
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
       }
     };
-
     fetchBouquets();
   }, []);
 
@@ -770,7 +783,7 @@ export default function MainPage() {
           ) : (
             <motion.div
               className={styles.worksGrid}
-              style={{ margin: '0 auto' }}
+              style={{ margin: '0 auto', opacity: 1 }}
             >
               {(selectedCategories.length > 0
                 ? bouquets.filter(bouquet => {
