@@ -790,7 +790,7 @@ export default function MainPage() {
                     filter: 'brightness(1.08) drop-shadow(0 0 8px #fff5b4)',
                   }}
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.85)',
+                    backgroundColor: '#fff',
                     borderRadius: '12px',
                     padding: 0,
                     opacity: 1,
