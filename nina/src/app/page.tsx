@@ -633,7 +633,7 @@ export default function MainPage() {
             <div style={{ color: 'orange', marginBottom: 16 }}>Показаны примеры букетов (нет соединения с сервером)</div>
           ) : (
             <motion.div 
-              className={bouquets.length <= 3 ? `${styles.worksGrid} ${styles.fewCards}` : styles.worksGrid}
+              className={styles.worksGrid}
               style={{
                 background: 'none',
                 backdropFilter: 'none',
@@ -644,20 +644,20 @@ export default function MainPage() {
                 margin: 0,
                 justifyItems: 'center',
                 justifyContent: 'center',
-                alignItems: bouquets.length <= 3 ? 'stretch' : undefined,
+                alignItems: 'stretch',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                maxWidth: 900,
               }}
             >
               {(selectedCategories.length > 0
                 ? bouquets.filter(bouquet => {
                     if (!bouquet.description) return false;
-                    // Собираем все хештеги из description
                     const descTags = (bouquet.description.match(/#[a-zа-я0-9]+/gi) || []).map(tag => tag.toLowerCase());
-                    // Приводим выбранные категории к нижнему регистру
                     const selected = selectedCategories.map(tag => tag.toLowerCase());
                     return selected.some(sel => descTags.includes(sel));
                   })
                 : bouquets
-              ).map((bouquet, i) => (
+              ).slice(0, 9).map((bouquet, i) => (
                 <motion.div 
                   key={bouquet.id}
                   className={styles.workCard}
