@@ -625,185 +625,187 @@ export default function MainPage() {
             ) : error && bouquets.length > 0 ? (
               <div style={{ color: 'orange', marginBottom: 16 }}>Показаны примеры букетов (нет соединения с сервером)</div>
             ) : (
-              <motion.div 
-                className={styles.worksGrid}
-                style={{
-                  background: 'none',
-                  backdropFilter: 'none',
-                  zIndex: 1,
-                  position: 'relative',
-                  opacity: 1,
-                  width: '100%',
-                  margin: 0,
-                  justifyItems: 'center',
-                  justifyContent: 'center',
-                  alignItems: 'stretch',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  maxWidth: 900,
-                }}
-              >
-                {(selectedCategories.length > 0
-                  ? bouquets.filter(bouquet => {
-                      if (!bouquet.description) return false;
-                      const descTags = (bouquet.description.match(/#[a-zа-я0-9]+/gi) || []).map(tag => tag.toLowerCase());
-                      const selected = selectedCategories.map(tag => tag.toLowerCase());
-                      return selected.some(sel => descTags.includes(sel));
-                    })
-                  : bouquets
-                ).slice(0, 9).map((bouquet, i) => (
-                  <motion.div 
-                    key={bouquet.id}
-                    className={styles.workCard}
-                    whileHover={{
-                      scale: 1.06,
-                      boxShadow: '0 0 32px 0 #FDC612, 0 0 0 2px #fff5b4',
-                      filter: 'brightness(1.08) drop-shadow(0 0 8px #fff5b4)',
-                    }}
-                    style={{
-                      backgroundColor: 'rgba(255,255,255,0.85)',
-                      borderRadius: '12px',
-                      padding: 0,
-                      opacity: 1,
-                      filter: 'none',
-                      backdropFilter: 'none',
-                      zIndex: 1,
-                      position: 'relative',
-                      boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                      border: '1px solid #eee',
-                      maxWidth: '260px',
-                      minWidth: 0,
-                      width: '100%',
-                      margin: '0 auto',
-                      overflow: 'hidden',
-                      height: '320px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-end',
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {/* Блёстки */}
-                    {sparklesArr[i] && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          pointerEvents: 'none',
-                          zIndex: 4,
-                        }}
-                      >
-                        {sparklesArr[i].map((sp, j) => (
-                          <motion.div
-                            key={j}
-                            style={{
-                              position: 'absolute',
-                              top: `${sp.top}%`,
-                              left: `${sp.left}%`,
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              background: 'radial-gradient(circle, #fffbe6 0%, #ffe066 80%, transparent 100%)',
-                              opacity: 0.7,
-                              filter: 'blur(0.5px)',
-                            }}
-                            animate={{
-                              scale: [1, 1.5, 1],
-                              opacity: [0.7, 1, 0.7],
-                            }}
-                            transition={{
-                              duration: sp.duration,
-                              repeat: Infinity,
-                              repeatType: 'reverse',
-                              delay: sp.delay,
-                            }}
-                          />
-                        ))}
-                      </motion.div>
-                    )}
-                    {/* Изображение на всю карточку */}
-                    <div style={{
-                      position: 'absolute',
-                      top: 0, left: 0, right: 0, bottom: 0,
-                      width: '100%',
-                      height: '100%',
-                      zIndex: 1,
-                    }}>
-                      {bouquet.photo_base64 ? (
-                        <Image
-                          src={
-                            bouquet.photo_base64.startsWith('data:image')
-                              ? bouquet.photo_base64
-                              : `data:image/jpeg;base64,${bouquet.photo_base64}`
-                          }
-                          alt={bouquet.name}
-                          fill
+              <div style={{ width: '100vw', display: 'flex', justifyContent: 'center', marginBottom: 0 }}>
+                <motion.div
+                  className={styles.worksGrid}
+                  style={{
+                    background: 'none',
+                    backdropFilter: 'none',
+                    zIndex: 1,
+                    position: 'relative',
+                    opacity: 1,
+                    width: 'auto',
+                    margin: 0,
+                    justifyItems: 'center',
+                    justifyContent: 'center',
+                    alignItems: 'stretch',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    maxWidth: 900,
+                  }}
+                >
+                  {(selectedCategories.length > 0
+                    ? bouquets.filter(bouquet => {
+                        if (!bouquet.description) return false;
+                        const descTags = (bouquet.description.match(/#[a-zа-я0-9]+/gi) || []).map(tag => tag.toLowerCase());
+                        const selected = selectedCategories.map(tag => tag.toLowerCase());
+                        return selected.some(sel => descTags.includes(sel));
+                      })
+                    : bouquets
+                  ).slice(0, 9).map((bouquet, i) => (
+                    <motion.div 
+                      key={bouquet.id}
+                      className={styles.workCard}
+                      whileHover={{
+                        scale: 1.06,
+                        boxShadow: '0 0 32px 0 #FDC612, 0 0 0 2px #fff5b4',
+                        filter: 'brightness(1.08) drop-shadow(0 0 8px #fff5b4)',
+                      }}
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.85)',
+                        borderRadius: '12px',
+                        padding: 0,
+                        opacity: 1,
+                        filter: 'none',
+                        backdropFilter: 'none',
+                        zIndex: 1,
+                        position: 'relative',
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                        border: '1px solid #eee',
+                        maxWidth: '260px',
+                        minWidth: 0,
+                        width: '100%',
+                        margin: '0 auto',
+                        overflow: 'hidden',
+                        height: '320px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'flex-end',
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {/* Блёстки */}
+                      {sparklesArr[i] && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileHover={{ opacity: 1 }}
                           style={{
-                            objectFit: 'cover',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
                             width: '100%',
                             height: '100%',
+                            pointerEvents: 'none',
+                            zIndex: 4,
                           }}
-                          unoptimized
-                        />
-                      ) : (
-                        <div style={{
-                          width: '100%',
-                          height: '100%',
-                          backgroundColor: 'rgba(255,255,255,0.5)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#888',
-                          fontSize: '1rem',
-                          zIndex: 1,
-                        }}>
-                          Нет изображения
-                        </div>
+                        >
+                          {sparklesArr[i].map((sp, j) => (
+                            <motion.div
+                              key={j}
+                              style={{
+                                position: 'absolute',
+                                top: `${sp.top}%`,
+                                left: `${sp.left}%`,
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: 'radial-gradient(circle, #fffbe6 0%, #ffe066 80%, transparent 100%)',
+                                opacity: 0.7,
+                                filter: 'blur(0.5px)',
+                              }}
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.7, 1, 0.7],
+                              }}
+                              transition={{
+                                duration: sp.duration,
+                                repeat: Infinity,
+                                repeatType: 'reverse',
+                                delay: sp.delay,
+                              }}
+                            />
+                          ))}
+                        </motion.div>
                       )}
-                      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%', background: 'linear-gradient(0deg, #000 20%, transparent 100%)', zIndex: 2 }} />
-                    </div>
-                    {/* Контент поверх изображения */}
-                    <div style={{
-                      position: 'relative',
-                      zIndex: 3,
-                      padding: '20px 16px 16px 16px',
-                      background: 'none',
-                      color: '#fff',
-                      textAlign: 'center',
-                    }}>
-                      <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#fff', textShadow: '0 2px 8px #000' }}>
-                        {bouquet.name}
-                      </h3>
-                      <a
-                        href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${bouquet.name}" (ID: ${bouquet.id}).`)}"`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-block',
-                          marginTop: '10px',
-                          padding: '10px 24px',
-                          borderRadius: '8px',
-                          backgroundColor: '#81e6d9',
-                          color: '#186697',
-                          fontWeight: 'bold',
-                          fontSize: '1.1rem',
-                          textDecoration: 'none',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                          transition: 'background 0.2s',
-                        }}
-                        onMouseOver={e => (e.currentTarget.style.backgroundColor = '#4fd1c5')}
-                        onMouseOut={e => (e.currentTarget.style.backgroundColor = '#81e6d9')}
-                      >
-                        {bouquet.price} ₽
-                      </a>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                      {/* Изображение на всю карточку */}
+                      <div style={{
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 1,
+                      }}>
+                        {bouquet.photo_base64 ? (
+                          <Image
+                            src={
+                              bouquet.photo_base64.startsWith('data:image')
+                                ? bouquet.photo_base64
+                                : `data:image/jpeg;base64,${bouquet.photo_base64}`
+                            }
+                            alt={bouquet.name}
+                            fill
+                            style={{
+                              objectFit: 'cover',
+                              width: '100%',
+                              height: '100%',
+                            }}
+                            unoptimized
+                          />
+                        ) : (
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(255,255,255,0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#888',
+                            fontSize: '1rem',
+                            zIndex: 1,
+                          }}>
+                            Нет изображения
+                          </div>
+                        )}
+                        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '60%', background: 'linear-gradient(0deg, #000 20%, transparent 100%)', zIndex: 2 }} />
+                      </div>
+                      {/* Контент поверх изображения */}
+                      <div style={{
+                        position: 'relative',
+                        zIndex: 3,
+                        padding: '20px 16px 16px 16px',
+                        background: 'none',
+                        color: '#fff',
+                        textAlign: 'center',
+                      }}>
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#fff', textShadow: '0 2px 8px #000' }}>
+                          {bouquet.name}
+                        </h3>
+                        <a
+                          href={`https://wa.me/79872521696?text=${encodeURIComponent(`Здравствуйте! Хочу заказать букет "${bouquet.name}" (ID: ${bouquet.id}).`)}"`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-block',
+                            marginTop: '10px',
+                            padding: '10px 24px',
+                            borderRadius: '8px',
+                            backgroundColor: '#81e6d9',
+                            color: '#186697',
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem',
+                            textDecoration: 'none',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            transition: 'background 0.2s',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.backgroundColor = '#4fd1c5')}
+                          onMouseOut={e => (e.currentTarget.style.backgroundColor = '#81e6d9')}
+                        >
+                          {bouquet.price} ₽
+                        </a>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
             )}
 
             <Link href="/all-works" passHref>
