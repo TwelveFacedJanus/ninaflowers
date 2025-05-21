@@ -519,11 +519,7 @@ export default function MainPage() {
       </motion.div>
 
       {/* Main content section */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}>
+      <>
 
         {/* Hero section */}
         <motion.div
@@ -1271,7 +1267,7 @@ export default function MainPage() {
             </span>
           </div>
         </motion.div>
-      </div>
+      </>
     </motion.div>
   );
 }

@@ -9,6 +9,7 @@ const onest = Onest({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ninaflowersalavat.ru"),
   title: "Nina Flowers",
   description: "Магазин цветов в Салавате",
   keywords: [
