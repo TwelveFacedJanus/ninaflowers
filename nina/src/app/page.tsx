@@ -100,7 +100,7 @@ export default function MainPage() {
         try {
           const parsedBouquets = JSON.parse(savedBouquets);
           console.log('✅ Successfully loaded bouquets from localStorage:', parsedBouquets.length);
-          setBouquets(parsedBouquets);
+          setBouquets(parsedBouquets.slice(0, 9));
           setLoading(false);
         } catch (err) {
           console.error('❌ Error parsing localStorage data:', err);
@@ -116,11 +116,15 @@ export default function MainPage() {
         }
         const data = await response.json();
         console.log('✅ Successfully fetched bouquets from server:', data.length);
-        setBouquets(data);
-        // Сохраняем в localStorage
+        setBouquets(data.slice(0, 9));
+        // Сохраняем только метаданные первых 9 букетов (без photo_base64)
         if (typeof window !== "undefined") {
-          localStorage.setItem("bouquets", JSON.stringify(data));
-          console.log('💾 Saved bouquets to localStorage');
+          const bouquetsMeta = data.slice(0, 9).map((b: Bouquet) => {
+            const { id, name, description, price } = b;
+            return { id, name, description, price };
+          });
+          localStorage.setItem("bouquets", JSON.stringify(bouquetsMeta));
+          console.log('💾 Saved bouquets meta to localStorage');
         }
       } catch (err) {
         console.error('❌ Error fetching bouquets:', err);
