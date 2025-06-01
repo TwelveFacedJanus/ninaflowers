@@ -22,4 +22,7 @@ update.sh
 Скрипт для установки обновления прямо с гита. То есть, мы завершаем контейнеры и удаляем контейнер из docker, чтобы потом скачать новый web и начинать работу с обновленной версией
 
 ## Запуск и зависимости
-Из зависимостей требуется только `docker-compose`. А для запуска `git clone https://github.com/TwelveFacedJanus/ninaflowers.git && cd ninaflowers && docker-compose up -d`
+Из зависимостей требуется только `docker-compose`. А для запуска
+```bash
+git clone https://github.com/TwelveFacedJanus/ninaflowers.git && cd ninaflowers && docker-compose up -d
+```
