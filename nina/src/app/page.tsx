@@ -91,36 +91,57 @@ export default function MainPage() {
   };
 
   useEffect(() => {
+    console.log('🔄 Starting bouquet loading process...');
     // При инициализации пробуем загрузить из localStorage
     if (typeof window !== "undefined") {
       const savedBouquets = localStorage.getItem("bouquets");
+      console.log('📦 Checking localStorage:', savedBouquets ? 'Found saved bouquets' : 'No saved bouquets');
       if (savedBouquets) {
         try {
-          setBouquets(JSON.parse(savedBouquets));
+          const parsedBouquets = JSON.parse(savedBouquets);
+          console.log('✅ Successfully loaded bouquets from localStorage:', parsedBouquets.length);
+          setBouquets(parsedBouquets);
           setLoading(false);
-        } catch {}
+        } catch (err) {
+          console.error('❌ Error parsing localStorage data:', err);
+        }
       }
     }
     const fetchBouquets = async () => {
+      console.log('🌐 Attempting to fetch bouquets from server...');
       try {
         const response = await fetch("/api/bouquets");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+        console.log('✅ Successfully fetched bouquets from server:', data.length);
         setBouquets(data);
         // Сохраняем в localStorage
         if (typeof window !== "undefined") {
           localStorage.setItem("bouquets", JSON.stringify(data));
+          console.log('💾 Saved bouquets to localStorage');
         }
       } catch (err) {
+        console.error('❌ Error fetching bouquets:', err);
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
+        console.log('🏁 Loading process completed');
       }
     };
     fetchBouquets();
   }, []);
+
+  // Добавим логирование при изменении состояний
+  useEffect(() => {
+    console.log('📊 State update:', {
+      loading,
+      error,
+      bouquetsCount: bouquets.length,
+      hasLocalStorage: typeof window !== "undefined" && !!localStorage.getItem("bouquets")
+    });
+  }, [loading, error, bouquets.length]);
 
   useEffect(() => {
     setSparklesArr(
@@ -618,7 +639,7 @@ export default function MainPage() {
               </motion.div>
             ) : error && bouquets.length === 0 ? (
               <div style={{ color: "red" }}>Ошибка: {error}</div>
-            ) : error && bouquets.length > 0 ? (
+            ) : error && !localStorage.getItem("bouquets") ? (
               <div style={{ color: "orange", marginBottom: 16 }}>
                 Показаны примеры букетов (нет соединения с сервером)
               </div>
