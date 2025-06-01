@@ -32,9 +32,10 @@ export function ProductCategories({
 
   return (
     <div
-      className={`w-full${isMobile ? " overflow-x-auto" : " overflow-x-hidden"} py-3 sm:py-4 mb-4 sm:mb-6`}
+      className="w-full py-3 sm:py-4 mb-4 sm:mb-6"
       style={{
-        overflow: "visible",
+        overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
         paddingTop: isMobile ? 18 : 24,
         paddingLeft: 24,
         paddingRight: 24,
@@ -42,17 +43,8 @@ export function ProductCategories({
     >
       <div
         ref={scrollRef}
-        className={`flex gap-2 sm:gap-4 px-1 sm:px-2 justify-center${isMobile ? " min-w-max" : ""} ${styles.categoriesScrollbar}`}
-        style={
-          !isMobile
-            ? {
-                overflowX: "auto",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                overflow: "visible",
-              }
-            : { overflow: "visible" }
-        }
+        className={`flex gap-2 sm:gap-4 px-1 sm:px-2 ${styles.categoriesScrollbar}`}
+        style={{ minWidth: "max-content" }}
       >
         {categories.map((cat) => {
           const hashtag = getCategoryHashtag(cat.label);
