@@ -10,7 +10,7 @@ const onest = Onest({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ninaflowersalavat.ru"),
-  title: "Nina Flowers",
+  title: "Nina Flowers | Магазин цветов в Салавате",
   description: "Магазин цветов в Салавате",
   keywords: [
     "цветы Салават", "купить букет Салават", "доставка цветов Салават", "магазин цветов", "букеты на заказ", "Nina Flowers", "цветочный магазин Салават", "свежие цветы","цветы от нины", "цветы салават", "цветы с доставкой", "букеты Салават"
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "Nina Flowers",
     description: "Магазин цветов в Салавате",
     url: "https://ninaflowersalavat.ru",
-    siteName: "Nina Flowers",
+    siteName: "Nina Flowers | Магазин цветов в Салавате",
     images: [
       {
         url: "/Flower.svg",
