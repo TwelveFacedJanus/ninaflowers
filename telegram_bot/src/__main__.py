@@ -47,7 +47,7 @@ async def set_default_user():
     else:
         print("Default user already exists.")
 
-BOT_API_TOKEN: str = '7647382898:AAGjUFJD4xcA_57f8rxkXElMzatJIsEqNqA'
+BOT_API_TOKEN: str = '7879952098:AAFksFAr88jc6qv_-1mbaa1Y9LqcoTebkKk'
 
 dp = Dispatcher()
 
